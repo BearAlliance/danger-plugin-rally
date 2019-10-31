@@ -1,8 +1,8 @@
-import dev from "./index";
+import dev from './index';
 
 declare const global: any;
 
-describe("dev()", () => {
+describe('dev()', () => {
   beforeEach(() => {
     global.warn = jest.fn();
     global.message = jest.fn();
@@ -17,13 +17,13 @@ describe("dev()", () => {
     global.markdown = undefined;
   });
 
-  it("Checks for a that message has been called", () => {
+  it('Checks for a that message has been called', () => {
     global.danger = {
-      github: { pr: { title: "My Test Title" } },
+      github: { pr: { title: 'My Test Title' } }
     };
 
     dev();
 
-    expect(global.message).toHaveBeenCalledWith("PR Title: My Test Title");
+    expect(global.message).toHaveBeenCalledWith('PR Title: My Test Title');
   });
 });
