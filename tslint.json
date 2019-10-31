@@ -1,6 +1,7 @@
 {
   "extends": [
-    "tslint:recommended"
+    "tslint:recommended",
+    "tslint-config-prettier"
   ],
   "rules": {
     "arrow-parens": false,
@@ -16,9 +17,11 @@
       "check-accessor",
       "check-constructor"
     ],
+    "quotemark": false,
     "object-literal-sort-keys": false,
     "semicolon": [
       true,
+      "always",
       "ignore-interfaces",
       "ignore-bound-class-methods"
     ],
