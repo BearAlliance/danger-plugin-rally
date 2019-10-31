@@ -27,7 +27,7 @@ describe('rally', () => {
       };
     });
     it('prints a warning', () => {
-      rally({});
+      rally();
       expect(global.warn).toHaveBeenCalledWith('No assigned story or defect');
     });
   });
@@ -41,7 +41,7 @@ describe('rally', () => {
         commits: [{ message: 'chore: do something\n\n resolves US1234567' }]
       }
     };
-    rally({});
+    rally();
     expect(global.markdown).toHaveBeenCalledWith(
       `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
     );
@@ -56,7 +56,7 @@ describe('rally', () => {
         commits: [{ message: 'chore: do something\n\n resolves DE123456' }]
       }
     };
-    rally({});
+    rally();
     expect(global.markdown).toHaveBeenCalledWith(
       `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
     );
@@ -72,7 +72,7 @@ describe('rally', () => {
       },
       git: { commits: [{ message: 'chore: do something' }] }
     };
-    rally({});
+    rally();
     expect(global.markdown).toHaveBeenCalledWith(
       `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
     );
@@ -85,7 +85,7 @@ describe('rally', () => {
       },
       git: { commits: [{ message: 'chore: do something' }] }
     };
-    rally({});
+    rally();
     expect(global.markdown).toHaveBeenCalledWith(
       `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
     );
@@ -101,7 +101,7 @@ describe('rally', () => {
       },
       git: { commits: [{ message: 'chore: do something' }] }
     };
-    rally({});
+    rally();
     expect(global.markdown).toHaveBeenCalledWith(
       `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
     );
@@ -117,7 +117,7 @@ describe('rally', () => {
       },
       git: { commits: [{ message: 'chore: do something' }] }
     };
-    rally({});
+    rally();
     expect(global.markdown).toHaveBeenCalledWith(
       `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
     );

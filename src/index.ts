@@ -6,10 +6,18 @@ export declare function warn(message: string): void;
 export declare function fail(message: string): void;
 export declare function markdown(message: string): void;
 
+export interface RallyPluginConfig {
+  domain?: string;
+}
+
 /**
  * tools for linking rally stories to pull requests
  */
-export default function rally({ domain = 'https://rally1.rallydev.com' }) {
+export default function rally(
+  config: RallyPluginConfig = { domain: 'https://rally1.rallydev.com' }
+) {
+  const { domain } = config;
+
   const bbs = danger.bitbucket_server;
   const prDescription = bbs.pr.description;
   const prTitle = bbs.pr.title;
