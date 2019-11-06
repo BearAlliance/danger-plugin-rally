@@ -10,6 +10,15 @@ export interface RallyPluginConfig {
   domain?: string;
 }
 
+function unique(array: any[]) {
+  const seen: any[] = [];
+  return array.filter(item => {
+    const duplicate = seen.includes(item);
+    seen.push(item);
+    return !duplicate;
+  });
+}
+
 /**
  * tools for linking rally stories to pull requests
  */
@@ -35,7 +44,7 @@ export default function rally(
   );
 
   if (storyNumbers) {
-    const output = storyNumbers.reduce(
+    const output = unique(storyNumbers).reduce(
       (acc, storyNumber) =>
         acc.concat(
           `\n - [${storyNumber}](${domain}/#/search?keywords=${storyNumber})`
@@ -45,7 +54,7 @@ export default function rally(
     markdown(output);
   }
   if (defectNumbers) {
-    const output = defectNumbers.reduce(
+    const output = unique(defectNumbers).reduce(
       (acc, defectNumber) =>
         acc.concat(
           `\n - [${defectNumber}](${domain}/#/search?keywords=${defectNumber})`

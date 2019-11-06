@@ -122,4 +122,46 @@ describe('rally', () => {
       `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
     );
   });
+
+  it('only prints defect references one time', () => {
+    global.danger = {
+      bitbucket_server: {
+        pr: {
+          title: 'My Test Title',
+          description: 'some description closes DE123456'
+        }
+      },
+      git: {
+        commits: [
+          { message: 'chore: do something' },
+          { message: 'contributes to DE123456' }
+        ]
+      }
+    };
+    rally();
+    expect(global.markdown).toHaveBeenCalledWith(
+      `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
+    );
+  });
+
+  it('only prints story references one time', () => {
+    global.danger = {
+      bitbucket_server: {
+        pr: {
+          title: 'My Test Title',
+          description: 'some description closes US1234567'
+        }
+      },
+      git: {
+        commits: [
+          { message: 'chore: do something' },
+          { message: 'contributes to US1234567' }
+        ]
+      }
+    };
+    rally();
+    expect(global.markdown).toHaveBeenCalledWith(
+      `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
+    );
+  });
 });
