@@ -27,8 +27,6 @@
     "commitmsg": "validate-commit-msg",
     "build": "tsc",
     "test": "jest",
-    "predocs": "rm -rf docs/",
-    "docs": "esdoc -c .esdoc.json",
     "prepublish": "npm run build",
     "prettier-project": "prettier --write 'src/**/*.{ts,tsx}'",
     "lint": "tslint \"src/**/*.ts\""
@@ -54,9 +52,6 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.6.4",
     "validate-commit-msg": "^2.14.0"
-  },
-  "optionalDependencies": {
-    "esdoc": "^1.1.0"
   },
   "config": {
     "commitizen": {
@@ -84,5 +79,6 @@
       "\\.snap$",
       "<rootDir>/node_modules/"
     ]
-  }
+  },
+  "dependencies": {}
 }
