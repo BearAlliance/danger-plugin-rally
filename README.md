@@ -43,6 +43,13 @@ Default: `false`
 Fails if story or defect numbers are not prefixed with `#` in the commit body.
 This useful if you are generating ticket links with [standard-version](https://www.npmjs.com/package/standard-version) or [semantic-release](https://www.npmjs.com/package/semantic-release)
 
+##### domain
+Type: `String`
+
+Default: `'https://rally1.rallydev.com'`
+
+Hostname for your rally instance
+
 ## Changelog
 
 See the GitHub [release history](https://github.com/bearalliance/danger-plugin-rally/releases).
