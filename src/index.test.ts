@@ -17,6 +17,47 @@ describe('rally', () => {
     global.markdown = undefined;
   });
 
+  describe('options', () => {
+    describe('requirePound', () => {
+      describe('when story numbers are not prefixed with a #', () => {
+        beforeEach(() => {
+          global.danger = {
+            bitbucket_server: {
+              pr: { title: 'My Test Title', description: 'some description' }
+            },
+            git: {
+              commits: [{ message: 'chore: do something\ncloses US1234567' }]
+            }
+          };
+        });
+        it('fails with a message', () => {
+          rally({ requirePound: true });
+          expect(global.fail)
+            .toHaveBeenCalledWith(`The following are referenced in the commit body, but are not prefixed by \`#\`.
+- US1234567
+Tools like [standard-version](https://www.npmjs.com/package/standard-version) rely on this marker to generate links to the ticket in the \`CHANGELOG\``);
+        });
+      });
+
+      describe('when story numbers are prefixed with a #', () => {
+        beforeEach(() => {
+          global.danger = {
+            bitbucket_server: {
+              pr: { title: 'My Test Title', description: 'some description' }
+            },
+            git: {
+              commits: [{ message: 'chore: do something\ncloses #US1234567' }]
+            }
+          };
+        });
+        it('does not fail', () => {
+          rally({ requirePound: true });
+          expect(global.fail).not.toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
   describe('When there is no rally story in the Title, body, or commit message', () => {
     beforeEach(() => {
       global.danger = {
