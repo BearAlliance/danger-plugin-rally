@@ -28,8 +28,21 @@ This plugin:
 - Provides links to stories and defects mentioned in commit messages, PR title, and PR description.
 - Warns if no stories or defects are found
 
+**Note:** Only works with Bitbucket server right now. More to come!
 
-Only works with Bitbucket server right now. More to come!
+## API
+### rally([options])
+
+#### options
+
+##### requirePound
+Type: `Boolean`
+
+Default: `false`
+
+Fails if story or defect numbers are not prefixed with `#` in the commit body.
+This useful if you are generating ticket links with [standard-version](https://www.npmjs.com/package/standard-version) or [semantic-release](https://www.npmjs.com/package/semantic-release)
+
 ## Changelog
 
 See the GitHub [release history](https://github.com/bearalliance/danger-plugin-rally/releases).
