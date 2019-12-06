@@ -22,7 +22,6 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "precommit": "lint-staged",
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
     "build": "tsc",
@@ -30,6 +29,11 @@
     "prepublish": "npm run build",
     "prettier-project": "prettier --write 'src/**/*.{ts,tsx}'",
     "lint": "tslint \"src/**/*.ts\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "license": "MIT",
   "engines": {
