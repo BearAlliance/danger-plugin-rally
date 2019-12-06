@@ -43,6 +43,13 @@ Default: `false`
 Fails if story or defect numbers are not prefixed with `#` in the commit body.
 This useful if you are generating ticket links with [standard-version](https://www.npmjs.com/package/standard-version) or [semantic-release](https://www.npmjs.com/package/semantic-release)
 
+##### bodyOnly
+Type: `Boolean`
+
+Default: `false`
+
+Fails if story or defect numbers mentioned in the commit header, rather than the body.
+
 ##### domain
 Type: `String`
 

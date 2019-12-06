@@ -18,6 +18,62 @@ describe('rally', () => {
   });
 
   describe('options', () => {
+    describe('bodyOnly', () => {
+      describe('when stories are in the commit heading', () => {
+        beforeEach(() => {
+          global.danger = {
+            bitbucket_server: {
+              pr: { title: 'My Test Title', description: 'some description' }
+            },
+            git: {
+              commits: [
+                { message: 'chore: do something #US1234567\ncloses #US1234567' }
+              ]
+            }
+          };
+        });
+        it('fails with a message', () => {
+          rally({ bodyOnly: true });
+          expect(global.fail).toHaveBeenCalledWith(
+            'Story and Defect references should go in the commit body, not the title'
+          );
+        });
+      });
+
+      describe('when stories are in the commit body', () => {
+        beforeEach(() => {
+          global.danger = {
+            bitbucket_server: {
+              pr: { title: 'My Test Title', description: 'some description' }
+            },
+            git: {
+              commits: [{ message: 'chore: do something\ncloses #US1234567' }]
+            }
+          };
+        });
+        it('does not fail', () => {
+          rally({ bodyOnly: true });
+          expect(global.fail).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('when there is no body', () => {
+        beforeEach(() => {
+          global.danger = {
+            bitbucket_server: {
+              pr: { title: 'My Test Title', description: 'some description' }
+            },
+            git: {
+              commits: [{ message: 'chore: do something' }]
+            }
+          };
+        });
+        it('does not fail', () => {
+          rally({ bodyOnly: true });
+          expect(global.fail).not.toHaveBeenCalled();
+        });
+      });
+    });
     describe('requirePound', () => {
       describe('when story numbers are not prefixed with a #', () => {
         beforeEach(() => {

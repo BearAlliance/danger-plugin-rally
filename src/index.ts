@@ -11,7 +11,8 @@ const rallyDefectPattern = /DE\d{6}/g;
 
 export interface RallyPluginConfig {
   domain?: string;
-  requirePound: boolean;
+  requirePound?: boolean;
+  bodyOnly?: boolean;
 }
 
 function unique(array: any[]) {
@@ -20,6 +21,20 @@ function unique(array: any[]) {
     const duplicate = seen.includes(item);
     seen.push(item);
     return !duplicate;
+  });
+}
+
+function checkBody(commitMessages) {
+  commitMessages.forEach(commitMessage => {
+    const commitTitle = commitMessage.split('\n')[0];
+    if (
+      commitTitle.match(rallyStoryPattern) ||
+      commitTitle.match(rallyDefectPattern)
+    ) {
+      fail(
+        'Story and Defect references should go in the commit body, not the title'
+      );
+    }
   });
 }
 
@@ -53,8 +68,12 @@ function checkForPound(commitMessages) {
  * tools for linking rally stories to pull requests
  */
 export default function rally(config?: RallyPluginConfig) {
-  const defaultConfig = { domain: 'https://rally1.rallydev.com' };
-  const { domain, requirePound } = { ...defaultConfig, ...config };
+  const defaultConfig: RallyPluginConfig = {
+    domain: 'https://rally1.rallydev.com',
+    requirePound: false,
+    bodyOnly: false
+  };
+  const { domain, requirePound, bodyOnly } = { ...defaultConfig, ...config };
 
   const bbs = danger.bitbucket_server;
   const prDescription = bbs.pr.description;
@@ -62,10 +81,13 @@ export default function rally(config?: RallyPluginConfig) {
 
   const commitMessages = danger.git.commits
     .map(commit => commit.message)
-    .join(' ');
+    .join('\n');
 
   if (requirePound) {
     checkForPound(commitMessages);
+  }
+  if (bodyOnly) {
+    checkBody(danger.git.commits.map(commit => commit.message));
   }
 
   const storyNumbers = (prDescription + prTitle + commitMessages).match(
