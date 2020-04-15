@@ -35,7 +35,7 @@ describe('rally', () => {
         it('fails with a message', () => {
           rally({ bodyOnly: true });
           expect(global.fail).toHaveBeenCalledWith(
-            'Story and Defect references should go in the commit body, not the title'
+            'Story, Task, and Defect references should go in the commit body, not the title'
           );
         });
       });
@@ -125,7 +125,9 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
     });
     it('prints a warning', () => {
       rally();
-      expect(global.warn).toHaveBeenCalledWith('No assigned story or defect');
+      expect(global.warn).toHaveBeenCalledWith(
+        'No assigned story, task, or defect'
+      );
     });
   });
 
@@ -159,6 +161,21 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
     );
   });
 
+  it('looks for tasks in commit message', () => {
+    global.danger = {
+      bitbucket_server: {
+        pr: { title: 'My Test Title', description: 'some description' }
+      },
+      git: {
+        commits: [{ message: 'chore: do something\n\n resolves TA1234567' }]
+      }
+    };
+    rally();
+    expect(global.markdown).toHaveBeenCalledWith(
+      `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
+    );
+  });
+
   it('looks for stories in PR titles', () => {
     global.danger = {
       bitbucket_server: {
@@ -185,6 +202,22 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
       `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
+    );
+  });
+
+  it('looks for tasks in PR titles', () => {
+    global.danger = {
+      bitbucket_server: {
+        pr: {
+          title: 'TA1234567 My Test Title',
+          description: 'some description'
+        }
+      },
+      git: { commits: [{ message: 'chore: do something' }] }
+    };
+    rally();
+    expect(global.markdown).toHaveBeenCalledWith(
+      `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
     );
   });
 
@@ -220,24 +253,19 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
     );
   });
 
-  it('only prints defect references one time', () => {
+  it('looks for tasks in PR descriptions', () => {
     global.danger = {
       bitbucket_server: {
         pr: {
           title: 'My Test Title',
-          description: 'some description closes DE123456'
+          description: 'some description closes TA1234567'
         }
       },
-      git: {
-        commits: [
-          { message: 'chore: do something' },
-          { message: 'contributes to DE123456' }
-        ]
-      }
+      git: { commits: [{ message: 'chore: do something' }] }
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
-      `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
+      `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
     );
   });
 
@@ -259,6 +287,48 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
       `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
+    );
+  });
+
+  it('only prints defect references one time', () => {
+    global.danger = {
+      bitbucket_server: {
+        pr: {
+          title: 'My Test Title',
+          description: 'some description closes DE123456'
+        }
+      },
+      git: {
+        commits: [
+          { message: 'chore: do something' },
+          { message: 'contributes to DE123456' }
+        ]
+      }
+    };
+    rally();
+    expect(global.markdown).toHaveBeenCalledWith(
+      `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
+    );
+  });
+
+  it('only prints task references one time', () => {
+    global.danger = {
+      bitbucket_server: {
+        pr: {
+          title: 'My Test Title',
+          description: 'some description closes TA1234567'
+        }
+      },
+      git: {
+        commits: [
+          { message: 'chore: do something' },
+          { message: 'contributes to TA1234567' }
+        ]
+      }
+    };
+    rally();
+    expect(global.markdown).toHaveBeenCalledWith(
+      `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
     );
   });
 });
