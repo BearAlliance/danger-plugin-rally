@@ -25,8 +25,8 @@ rally();
 ```
 
 This plugin:
-- Provides links to stories and defects mentioned in commit messages, PR title, and PR description.
-- Warns if no stories or defects are found
+- Provides links to stories, tasks, and defects mentioned in commit messages, PR title, and PR description.
+- Warns if no stories, tasks, or defects are found
 
 **Note:** Only works with Bitbucket server right now. More to come!
 
@@ -40,7 +40,7 @@ Type: `Boolean`
 
 Default: `false`
 
-Fails if story or defect numbers are not prefixed with `#` in the commit body.
+Fails if story, task, or defect numbers are not prefixed with `#` in the commit body.
 This useful if you are generating ticket links with [standard-version](https://www.npmjs.com/package/standard-version) or [semantic-release](https://www.npmjs.com/package/semantic-release)
 
 ##### bodyOnly
@@ -48,7 +48,7 @@ Type: `Boolean`
 
 Default: `false`
 
-Fails if story or defect numbers mentioned in the commit header, rather than the body.
+Fails if story, task, or defect numbers mentioned in the commit header, rather than the body.
 
 ##### domain
 Type: `String`
