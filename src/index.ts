@@ -8,6 +8,7 @@ export declare function markdown(message: string): void;
 
 const rallyStoryPattern = /US\d{7}/g;
 const rallyDefectPattern = /DE\d{6}/g;
+const rallyTaskPattern = /TA\d{7}/g;
 
 export interface RallyPluginConfig {
   domain?: string;
@@ -29,10 +30,11 @@ function checkBody(commitMessages) {
     const commitTitle = commitMessage.split('\n')[0];
     if (
       commitTitle.match(rallyStoryPattern) ||
-      commitTitle.match(rallyDefectPattern)
+      commitTitle.match(rallyDefectPattern) ||
+      commitTitle.match(rallyTaskPattern)
     ) {
       fail(
-        'Story and Defect references should go in the commit body, not the title'
+        'Story, Task, and Defect references should go in the commit body, not the title'
       );
     }
   });
@@ -41,17 +43,25 @@ function checkBody(commitMessages) {
 function checkForPound(commitMessages) {
   const poundStoryPattern = /#US\d{7}/g;
   const poundDefectPattern = /#DE\d{6}/g;
+  const poundTaskPattern = /#TA\d{7}/g;
 
   const poundStories = commitMessages.match(poundStoryPattern) || [];
   const poundDefects = commitMessages.match(poundDefectPattern) || [];
+  const poundTasks = commitMessages.match(poundTaskPattern) || [];
 
   const stories = commitMessages.match(rallyStoryPattern) || [];
   const defects = commitMessages.match(rallyDefectPattern) || [];
+  const tasks = commitMessages.match(rallyTaskPattern) || [];
 
   const storyDifference = stories.filter(x => !poundStories.includes('#' + x));
   const defectDifference = defects.filter(x => !poundDefects.includes('#' + x));
+  const taskDifference = tasks.filter(x => !poundTasks.includes('#' + x));
 
-  const difference = [...storyDifference, ...defectDifference];
+  const difference = [
+    ...storyDifference,
+    ...defectDifference,
+    ...taskDifference
+  ];
 
   if (difference.length) {
     fail(
@@ -96,6 +106,9 @@ export default function rally(config?: RallyPluginConfig) {
   const defectNumbers = (prDescription + prTitle + commitMessages).match(
     rallyDefectPattern
   );
+  const taskNumbers = (prDescription + prTitle + commitMessages).match(
+    rallyTaskPattern
+  );
 
   if (storyNumbers) {
     const output = unique(storyNumbers).reduce(
@@ -117,8 +130,18 @@ export default function rally(config?: RallyPluginConfig) {
     );
     markdown(output);
   }
+  if (taskNumbers) {
+    const output = unique(taskNumbers).reduce(
+      (acc, taskNumber) =>
+        acc.concat(
+          `\n - [${taskNumber}](${domain}/#/search?keywords=${taskNumber})`
+        ),
+      '**Tasks Referenced:**'
+    );
+    markdown(output);
+  }
 
-  if (!storyNumbers && !defectNumbers) {
-    warn('No assigned story or defect');
+  if (!storyNumbers && !defectNumbers && !taskNumbers) {
+    warn('No assigned story, task, or defect');
   }
 }
