@@ -28,7 +28,8 @@
     "test": "npm run lint && jest",
     "test:unit": "jest",
     "prepublish": "npm run build",
-    "prettier-project": "prettier --write 'src/**/*.{ts,tsx}'",
+    "prettier:fix": "prettier --write . --ignore-path .gitignore",
+    "prettier:check": "prettier --check . --ignore-path .gitignore",
     "lint": "tslint \"src/**/*.ts\""
   },
   "husky": {
@@ -67,8 +68,11 @@
     }
   },
   "lint-staged": {
-    "*.@(ts|tsx)": [
+    "*{ts,tsx}": [
       "tslint --fix",
+      "prettier --write"
+    ],
+    "*{js,json,md}": [
       "prettier --write"
     ]
   },

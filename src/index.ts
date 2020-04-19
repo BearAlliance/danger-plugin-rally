@@ -94,7 +94,7 @@ export default function rally(config?: RallyPluginConfig) {
   const prDescription = bbs.pr.description;
   const prTitle = bbs.pr.title;
   const nonMergeCommits = danger.git.commits.filter(
-    commit => !commit.message.match(mergeCommitPattern)
+    (commit) => !commit.message.match(mergeCommitPattern)
   );
   const commitMessages = nonMergeCommits
     .map((commit) => commit.message)
