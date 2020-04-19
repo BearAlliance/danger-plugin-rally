@@ -98,19 +98,19 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
         it('fails with a message and skips merge commits', () => {
           global.danger = {
             bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' }
+              pr: { title: 'My Test Title', description: 'some description' },
             },
             git: {
               commits: [
                 {
                   message:
-                    'Merge pull request #1234 in BearAlliance/danger-plugin-rally from ~USER/danger-plugin-rally:feature/US1234567 to staging\n* commit h1a2s3h'
+                    'Merge pull request #1234 in BearAlliance/danger-plugin-rally from ~USER/danger-plugin-rally:feature/US1234567 to staging\n* commit h1a2s3h',
                 },
                 {
-                  message: 'chore: do something\ncloses US1234567'
-                }
-              ]
-            }
+                  message: 'chore: do something\ncloses US1234567',
+                },
+              ],
+            },
           };
           rally({ requirePound: true });
           expect(global.fail)
@@ -138,19 +138,19 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
         it('does not fail and skips merge commits', () => {
           global.danger = {
             bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' }
+              pr: { title: 'My Test Title', description: 'some description' },
             },
             git: {
               commits: [
                 {
                   message:
-                    'Merge pull request #1234 in BearAlliance/danger-plugin-rally from ~USER/danger-plugin-rally:feature/US1234567 to staging\n* commit h1a2s3h'
+                    'Merge pull request #1234 in BearAlliance/danger-plugin-rally from ~USER/danger-plugin-rally:feature/US1234567 to staging\n* commit h1a2s3h',
                 },
                 {
-                  message: 'chore: do something\ncloses #US1234567'
-                }
-              ]
-            }
+                  message: 'chore: do something\ncloses #US1234567',
+                },
+              ],
+            },
           };
           rally({ requirePound: true });
           expect(global.fail).not.toHaveBeenCalled();

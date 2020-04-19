@@ -1,6 +1,6 @@
 ## Development
 
-Install dependencies with 
+Install dependencies with
 
 ```bash
 npm ci
