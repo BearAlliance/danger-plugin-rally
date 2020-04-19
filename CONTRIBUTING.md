@@ -1,8 +1,16 @@
 ## Development
 
-Install [Yarn](https://yarnpkg.com/en/), and install the dependencies - `yarn install`.
+Install dependencies with 
 
-Run the [Jest](https://facebook.github.io/jest/) test suite with `yarn test`.
+```bash
+npm ci
+```
+
+Run the test suite with
+
+```bash
+npm test
+```
 
 This project uses [semantic-release](https://github.com/semantic-release/semantic-release) for automated NPM package publishing.
 
