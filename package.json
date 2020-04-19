@@ -25,7 +25,7 @@
     "commit": "git-cz",
     "build": "tsc",
     "prepublishOnly": "rimraf dist/ && npm run build",
-    "test": "npm run lint && jest",
+    "test": "npm run prettier:check && npm run lint && npm run test:unit",
     "test:unit": "jest",
     "prepublish": "npm run build",
     "prettier:fix": "prettier --write . --ignore-path .gitignore",
