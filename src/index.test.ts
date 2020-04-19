@@ -23,13 +23,15 @@ describe('rally', () => {
         beforeEach(() => {
           global.danger = {
             bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' }
+              pr: { title: 'My Test Title', description: 'some description' },
             },
             git: {
               commits: [
-                { message: 'chore: do something #US1234567\ncloses #US1234567' }
-              ]
-            }
+                {
+                  message: 'chore: do something #US1234567\ncloses #US1234567',
+                },
+              ],
+            },
           };
         });
         it('fails with a message', () => {
@@ -44,11 +46,11 @@ describe('rally', () => {
         beforeEach(() => {
           global.danger = {
             bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' }
+              pr: { title: 'My Test Title', description: 'some description' },
             },
             git: {
-              commits: [{ message: 'chore: do something\ncloses #US1234567' }]
-            }
+              commits: [{ message: 'chore: do something\ncloses #US1234567' }],
+            },
           };
         });
         it('does not fail', () => {
@@ -61,11 +63,11 @@ describe('rally', () => {
         beforeEach(() => {
           global.danger = {
             bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' }
+              pr: { title: 'My Test Title', description: 'some description' },
             },
             git: {
-              commits: [{ message: 'chore: do something' }]
-            }
+              commits: [{ message: 'chore: do something' }],
+            },
           };
         });
         it('does not fail', () => {
@@ -79,11 +81,11 @@ describe('rally', () => {
         beforeEach(() => {
           global.danger = {
             bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' }
+              pr: { title: 'My Test Title', description: 'some description' },
             },
             git: {
-              commits: [{ message: 'chore: do something\ncloses US1234567' }]
-            }
+              commits: [{ message: 'chore: do something\ncloses US1234567' }],
+            },
           };
         });
         it('fails with a message', () => {
@@ -122,11 +124,11 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
         beforeEach(() => {
           global.danger = {
             bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' }
+              pr: { title: 'My Test Title', description: 'some description' },
             },
             git: {
-              commits: [{ message: 'chore: do something\ncloses #US1234567' }]
-            }
+              commits: [{ message: 'chore: do something\ncloses #US1234567' }],
+            },
           };
         });
         it('does not fail', () => {
@@ -161,9 +163,9 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
     beforeEach(() => {
       global.danger = {
         bitbucket_server: {
-          pr: { title: 'My Test Title', description: 'some description' }
+          pr: { title: 'My Test Title', description: 'some description' },
         },
-        git: { commits: [{ message: 'chore: do something' }] }
+        git: { commits: [{ message: 'chore: do something' }] },
       };
     });
     it('prints a warning', () => {
@@ -177,11 +179,11 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
   it('looks for stories in commit message', () => {
     global.danger = {
       bitbucket_server: {
-        pr: { title: 'My Test Title', description: 'some description' }
+        pr: { title: 'My Test Title', description: 'some description' },
       },
       git: {
-        commits: [{ message: 'chore: do something\n\n resolves US1234567' }]
-      }
+        commits: [{ message: 'chore: do something\n\n resolves US1234567' }],
+      },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -192,11 +194,11 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
   it('looks for defects in commit message', () => {
     global.danger = {
       bitbucket_server: {
-        pr: { title: 'My Test Title', description: 'some description' }
+        pr: { title: 'My Test Title', description: 'some description' },
       },
       git: {
-        commits: [{ message: 'chore: do something\n\n resolves DE123456' }]
-      }
+        commits: [{ message: 'chore: do something\n\n resolves DE123456' }],
+      },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -207,11 +209,11 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
   it('looks for tasks in commit message', () => {
     global.danger = {
       bitbucket_server: {
-        pr: { title: 'My Test Title', description: 'some description' }
+        pr: { title: 'My Test Title', description: 'some description' },
       },
       git: {
-        commits: [{ message: 'chore: do something\n\n resolves TA1234567' }]
-      }
+        commits: [{ message: 'chore: do something\n\n resolves TA1234567' }],
+      },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -224,10 +226,10 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       bitbucket_server: {
         pr: {
           title: 'US1234567 My Test Title',
-          description: 'some description'
-        }
+          description: 'some description',
+        },
       },
-      git: { commits: [{ message: 'chore: do something' }] }
+      git: { commits: [{ message: 'chore: do something' }] },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -238,9 +240,12 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
   it('looks for defects in PR titles', () => {
     global.danger = {
       bitbucket_server: {
-        pr: { title: 'DE123456 My Test Title', description: 'some description' }
+        pr: {
+          title: 'DE123456 My Test Title',
+          description: 'some description',
+        },
       },
-      git: { commits: [{ message: 'chore: do something' }] }
+      git: { commits: [{ message: 'chore: do something' }] },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -253,10 +258,10 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       bitbucket_server: {
         pr: {
           title: 'TA1234567 My Test Title',
-          description: 'some description'
-        }
+          description: 'some description',
+        },
       },
-      git: { commits: [{ message: 'chore: do something' }] }
+      git: { commits: [{ message: 'chore: do something' }] },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -269,10 +274,10 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       bitbucket_server: {
         pr: {
           title: 'My Test Title',
-          description: 'some description closes US1234567'
-        }
+          description: 'some description closes US1234567',
+        },
       },
-      git: { commits: [{ message: 'chore: do something' }] }
+      git: { commits: [{ message: 'chore: do something' }] },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -285,10 +290,10 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       bitbucket_server: {
         pr: {
           title: 'My Test Title',
-          description: 'some description closes DE123456'
-        }
+          description: 'some description closes DE123456',
+        },
       },
-      git: { commits: [{ message: 'chore: do something' }] }
+      git: { commits: [{ message: 'chore: do something' }] },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -301,10 +306,10 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       bitbucket_server: {
         pr: {
           title: 'My Test Title',
-          description: 'some description closes TA1234567'
-        }
+          description: 'some description closes TA1234567',
+        },
       },
-      git: { commits: [{ message: 'chore: do something' }] }
+      git: { commits: [{ message: 'chore: do something' }] },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -317,15 +322,15 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       bitbucket_server: {
         pr: {
           title: 'My Test Title',
-          description: 'some description closes US1234567'
-        }
+          description: 'some description closes US1234567',
+        },
       },
       git: {
         commits: [
           { message: 'chore: do something' },
-          { message: 'contributes to US1234567' }
-        ]
-      }
+          { message: 'contributes to US1234567' },
+        ],
+      },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -338,15 +343,15 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       bitbucket_server: {
         pr: {
           title: 'My Test Title',
-          description: 'some description closes DE123456'
-        }
+          description: 'some description closes DE123456',
+        },
       },
       git: {
         commits: [
           { message: 'chore: do something' },
-          { message: 'contributes to DE123456' }
-        ]
-      }
+          { message: 'contributes to DE123456' },
+        ],
+      },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(
@@ -359,15 +364,15 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       bitbucket_server: {
         pr: {
           title: 'My Test Title',
-          description: 'some description closes TA1234567'
-        }
+          description: 'some description closes TA1234567',
+        },
       },
       git: {
         commits: [
           { message: 'chore: do something' },
-          { message: 'contributes to TA1234567' }
-        ]
-      }
+          { message: 'contributes to TA1234567' },
+        ],
+      },
     };
     rally();
     expect(global.markdown).toHaveBeenCalledWith(

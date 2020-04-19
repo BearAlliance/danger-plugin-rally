@@ -19,7 +19,7 @@ export interface RallyPluginConfig {
 
 function unique(array: any[]) {
   const seen: any[] = [];
-  return array.filter(item => {
+  return array.filter((item) => {
     const duplicate = seen.includes(item);
     seen.push(item);
     return !duplicate;
@@ -27,7 +27,7 @@ function unique(array: any[]) {
 }
 
 function checkBody(commitMessages) {
-  commitMessages.forEach(commitMessage => {
+  commitMessages.forEach((commitMessage) => {
     const commitTitle = commitMessage.split('\n')[0];
     if (
       commitTitle.match(rallyStoryPattern) ||
@@ -54,20 +54,24 @@ function checkForPound(commitMessages) {
   const defects = commitMessages.match(rallyDefectPattern) || [];
   const tasks = commitMessages.match(rallyTaskPattern) || [];
 
-  const storyDifference = stories.filter(x => !poundStories.includes('#' + x));
-  const defectDifference = defects.filter(x => !poundDefects.includes('#' + x));
-  const taskDifference = tasks.filter(x => !poundTasks.includes('#' + x));
+  const storyDifference = stories.filter(
+    (x) => !poundStories.includes('#' + x)
+  );
+  const defectDifference = defects.filter(
+    (x) => !poundDefects.includes('#' + x)
+  );
+  const taskDifference = tasks.filter((x) => !poundTasks.includes('#' + x));
 
   const difference = [
     ...storyDifference,
     ...defectDifference,
-    ...taskDifference
+    ...taskDifference,
   ];
 
   if (difference.length) {
     fail(
       `The following are referenced in the commit body, but are not prefixed by \`#\`.\n${difference
-        .map(str => `- ${str}`)
+        .map((str) => `- ${str}`)
         .join(
           '\n'
         )}\nTools like [standard-version](https://www.npmjs.com/package/standard-version) rely on this marker to generate links to the ticket in the \`CHANGELOG\``
@@ -82,7 +86,7 @@ export default function rally(config?: RallyPluginConfig) {
   const defaultConfig: RallyPluginConfig = {
     domain: 'https://rally1.rallydev.com',
     requirePound: false,
-    bodyOnly: false
+    bodyOnly: false,
   };
   const { domain, requirePound, bodyOnly } = { ...defaultConfig, ...config };
 
@@ -93,14 +97,14 @@ export default function rally(config?: RallyPluginConfig) {
     commit => !commit.message.match(mergeCommitPattern)
   );
   const commitMessages = nonMergeCommits
-    .map(commit => commit.message)
+    .map((commit) => commit.message)
     .join('\n');
 
   if (requirePound) {
     checkForPound(commitMessages);
   }
   if (bodyOnly) {
-    checkBody(nonMergeCommits.map(commit => commit.message));
+    checkBody(nonMergeCommits.map((commit) => commit.message));
   }
 
   const storyNumbers = (prDescription + prTitle + commitMessages).match(
