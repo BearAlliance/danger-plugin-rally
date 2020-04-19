@@ -48,16 +48,16 @@
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
-    "@types/jest": "^24.0.21",
+    "@types/jest": "^25.2.1",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.0.2",
     "danger": "*",
     "husky": "^4.2.5",
-    "jest": "^24.9.0",
+    "jest": "^25.3.0",
     "lint-staged": "^10.2.7",
     "prettier": "^2.0.4",
     "rimraf": "^3.0.2",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^25.4.0",
     "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.6.4"
@@ -83,7 +83,7 @@
       "js"
     ],
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     },
     "testRegex": "(.test)\\.(ts|tsx)$",
     "testPathIgnorePatterns": [
