@@ -9,6 +9,7 @@ export declare function markdown(message: string): void;
 const rallyStoryPattern = /US\d{7}/g;
 const rallyDefectPattern = /DE\d{6}/g;
 const rallyTaskPattern = /TA\d{7}/g;
+const mergeCommitPattern = /^Merge (pull request|branch)/;
 
 export interface RallyPluginConfig {
   domain?: string;
@@ -88,8 +89,10 @@ export default function rally(config?: RallyPluginConfig) {
   const bbs = danger.bitbucket_server;
   const prDescription = bbs.pr.description;
   const prTitle = bbs.pr.title;
-
-  const commitMessages = danger.git.commits
+  const nonMergeCommits = danger.git.commits.filter(
+    commit => !commit.message.match(mergeCommitPattern)
+  );
+  const commitMessages = nonMergeCommits
     .map(commit => commit.message)
     .join('\n');
 
@@ -97,7 +100,7 @@ export default function rally(config?: RallyPluginConfig) {
     checkForPound(commitMessages);
   }
   if (bodyOnly) {
-    checkBody(danger.git.commits.map(commit => commit.message));
+    checkBody(nonMergeCommits.map(commit => commit.message));
   }
 
   const storyNumbers = (prDescription + prTitle + commitMessages).match(

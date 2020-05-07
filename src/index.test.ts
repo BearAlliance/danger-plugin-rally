@@ -93,6 +93,29 @@ describe('rally', () => {
 - US1234567
 Tools like [standard-version](https://www.npmjs.com/package/standard-version) rely on this marker to generate links to the ticket in the \`CHANGELOG\``);
         });
+        it('fails with a message and skips merge commits', () => {
+          global.danger = {
+            bitbucket_server: {
+              pr: { title: 'My Test Title', description: 'some description' }
+            },
+            git: {
+              commits: [
+                {
+                  message:
+                    'Merge pull request #1234 in BearAlliance/danger-plugin-rally from ~USER/danger-plugin-rally:feature/US1234567 to staging\n* commit h1a2s3h'
+                },
+                {
+                  message: 'chore: do something\ncloses US1234567'
+                }
+              ]
+            }
+          };
+          rally({ requirePound: true });
+          expect(global.fail)
+            .toHaveBeenCalledWith(`The following are referenced in the commit body, but are not prefixed by \`#\`.
+- US1234567
+Tools like [standard-version](https://www.npmjs.com/package/standard-version) rely on this marker to generate links to the ticket in the \`CHANGELOG\``);
+        });
       });
 
       describe('when story numbers are prefixed with a #', () => {
@@ -107,6 +130,26 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
           };
         });
         it('does not fail', () => {
+          rally({ requirePound: true });
+          expect(global.fail).not.toHaveBeenCalled();
+        });
+        it('does not fail and skips merge commits', () => {
+          global.danger = {
+            bitbucket_server: {
+              pr: { title: 'My Test Title', description: 'some description' }
+            },
+            git: {
+              commits: [
+                {
+                  message:
+                    'Merge pull request #1234 in BearAlliance/danger-plugin-rally from ~USER/danger-plugin-rally:feature/US1234567 to staging\n* commit h1a2s3h'
+                },
+                {
+                  message: 'chore: do something\ncloses #US1234567'
+                }
+              ]
+            }
+          };
           rally({ requirePound: true });
           expect(global.fail).not.toHaveBeenCalled();
         });
