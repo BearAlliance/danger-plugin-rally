@@ -35,8 +35,7 @@ This plugin:
 
 - Provides links to stories, tasks, and defects mentioned in commit messages, PR title, and PR description.
 - Warns if no stories, tasks, or defects are found
-
-**Note:** Only works with Bitbucket server right now. More to come!
+- Works with GitHub and BitBucket Server
 
 ## API
 

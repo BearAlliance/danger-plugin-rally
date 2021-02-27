@@ -1,5 +1,6 @@
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
-import { DangerDSLType } from '../node_modules/danger/distribution/dsl/DangerDSL';
+import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
+import { getPrDescription, getPrTitle } from './pr-info';
 declare var danger: DangerDSLType;
 export declare function message(message: string): void;
 export declare function warn(message: string): void;
@@ -89,10 +90,9 @@ export default function rally(config?: RallyPluginConfig) {
     bodyOnly: false,
   };
   const { domain, requirePound, bodyOnly } = { ...defaultConfig, ...config };
+  const prTitle = getPrTitle(danger);
+  const prDescription = getPrDescription(danger);
 
-  const bbs = danger.bitbucket_server;
-  const prDescription = bbs.pr.description;
-  const prTitle = bbs.pr.title;
   const nonMergeCommits = danger.git.commits.filter(
     (commit) => !commit.message.match(mergeCommitPattern)
   );
