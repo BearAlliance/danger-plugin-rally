@@ -1,9 +1,21 @@
 import rally from './index';
+import * as prInfo from './pr-info';
 
 declare const global: any;
 
+function mockPrInfo(prProperties: {
+  title: string;
+  description: string;
+}): void {
+  jest.spyOn(prInfo, 'getPrTitle').mockImplementation(() => prProperties.title);
+  jest
+    .spyOn(prInfo, 'getPrDescription')
+    .mockImplementation(() => prProperties.description);
+}
+
 describe('rally', () => {
   beforeEach(() => {
+    jest.resetAllMocks();
     global.warn = jest.fn();
     global.message = jest.fn();
     global.fail = jest.fn();
@@ -18,13 +30,14 @@ describe('rally', () => {
   });
 
   describe('options', () => {
+    beforeEach(() => {
+      mockPrInfo({ title: 'My Test Title', description: 'some description' });
+    });
+
     describe('bodyOnly', () => {
       describe('when stories are in the commit heading', () => {
         beforeEach(() => {
           global.danger = {
-            bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' },
-            },
             git: {
               commits: [
                 {
@@ -45,9 +58,6 @@ describe('rally', () => {
       describe('when stories are in the commit body', () => {
         beforeEach(() => {
           global.danger = {
-            bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' },
-            },
             git: {
               commits: [{ message: 'chore: do something\ncloses #US1234567' }],
             },
@@ -62,9 +72,6 @@ describe('rally', () => {
       describe('when there is no body', () => {
         beforeEach(() => {
           global.danger = {
-            bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' },
-            },
             git: {
               commits: [{ message: 'chore: do something' }],
             },
@@ -80,9 +87,6 @@ describe('rally', () => {
       describe('when story numbers are not prefixed with a #', () => {
         beforeEach(() => {
           global.danger = {
-            bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' },
-            },
             git: {
               commits: [{ message: 'chore: do something\ncloses US1234567' }],
             },
@@ -97,9 +101,6 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
         });
         it('fails with a message and skips merge commits', () => {
           global.danger = {
-            bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' },
-            },
             git: {
               commits: [
                 {
@@ -123,9 +124,6 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
       describe('when story numbers are prefixed with a #', () => {
         beforeEach(() => {
           global.danger = {
-            bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' },
-            },
             git: {
               commits: [{ message: 'chore: do something\ncloses #US1234567' }],
             },
@@ -137,9 +135,6 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
         });
         it('does not fail and skips merge commits', () => {
           global.danger = {
-            bitbucket_server: {
-              pr: { title: 'My Test Title', description: 'some description' },
-            },
             git: {
               commits: [
                 {
@@ -161,10 +156,9 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
 
   describe('When there is no rally story in the Title, body, or commit message', () => {
     beforeEach(() => {
+      mockPrInfo({ title: 'My Test Title', description: 'some description' });
+
       global.danger = {
-        bitbucket_server: {
-          pr: { title: 'My Test Title', description: 'some description' },
-        },
         git: { commits: [{ message: 'chore: do something' }] },
       };
     });
@@ -176,155 +170,145 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
     });
   });
 
-  it('looks for stories in commit message', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: { title: 'My Test Title', description: 'some description' },
-      },
-      git: {
-        commits: [{ message: 'chore: do something\n\n resolves US1234567' }],
-      },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
-    );
-  });
+  describe('commit messages', () => {
+    beforeEach(() => {
+      mockPrInfo({ title: 'My Test Title', description: 'some description' });
+    });
 
-  it('looks for defects in commit message', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: { title: 'My Test Title', description: 'some description' },
-      },
-      git: {
-        commits: [{ message: 'chore: do something\n\n resolves DE123456' }],
-      },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
-    );
-  });
-
-  it('looks for tasks in commit message', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: { title: 'My Test Title', description: 'some description' },
-      },
-      git: {
-        commits: [{ message: 'chore: do something\n\n resolves TA1234567' }],
-      },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
-    );
-  });
-
-  it('looks for stories in PR titles', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'US1234567 My Test Title',
-          description: 'some description',
+    it('looks for stories in commit message', () => {
+      global.danger = {
+        git: {
+          commits: [{ message: 'chore: do something\n\n resolves US1234567' }],
         },
-      },
-      git: { commits: [{ message: 'chore: do something' }] },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
-    );
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
+      );
+    });
+
+    it('looks for defects in commit message', () => {
+      mockPrInfo({ title: 'My Test Title', description: 'some description' });
+
+      global.danger = {
+        git: {
+          commits: [{ message: 'chore: do something\n\n resolves DE123456' }],
+        },
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
+      );
+    });
+
+    it('looks for tasks in commit message', () => {
+      global.danger = {
+        git: {
+          commits: [{ message: 'chore: do something\n\n resolves TA1234567' }],
+        },
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
+      );
+    });
   });
 
-  it('looks for defects in PR titles', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'DE123456 My Test Title',
-          description: 'some description',
-        },
-      },
-      git: { commits: [{ message: 'chore: do something' }] },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
-    );
-  });
+  describe('pr info', () => {
+    it('looks for stories in PR titles', () => {
+      mockPrInfo({
+        title: 'US1234567 My Test Title',
+        description: 'some description',
+      });
 
-  it('looks for tasks in PR titles', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'TA1234567 My Test Title',
-          description: 'some description',
-        },
-      },
-      git: { commits: [{ message: 'chore: do something' }] },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
-    );
-  });
+      global.danger = {
+        git: { commits: [{ message: 'chore: do something' }] },
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
+      );
+    });
 
-  it('looks for stories in PR descriptions', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'My Test Title',
-          description: 'some description closes US1234567',
-        },
-      },
-      git: { commits: [{ message: 'chore: do something' }] },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
-    );
-  });
+    it('looks for defects in PR titles', () => {
+      mockPrInfo({
+        title: 'DE123456 My Test Title',
+        description: 'some description',
+      });
 
-  it('looks for defects in PR descriptions', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'My Test Title',
-          description: 'some description closes DE123456',
-        },
-      },
-      git: { commits: [{ message: 'chore: do something' }] },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
-    );
-  });
+      global.danger = {
+        git: { commits: [{ message: 'chore: do something' }] },
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
+      );
+    });
 
-  it('looks for tasks in PR descriptions', () => {
-    global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'My Test Title',
-          description: 'some description closes TA1234567',
-        },
-      },
-      git: { commits: [{ message: 'chore: do something' }] },
-    };
-    rally();
-    expect(global.markdown).toHaveBeenCalledWith(
-      `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
-    );
+    it('looks for tasks in PR titles', () => {
+      mockPrInfo({
+        title: 'TA1234567 My Test Title',
+        description: 'some description',
+      });
+      global.danger = {
+        git: { commits: [{ message: 'chore: do something' }] },
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
+      );
+    });
+
+    it('looks for stories in PR descriptions', () => {
+      mockPrInfo({
+        title: 'My Test Title',
+        description: 'some description closes US1234567',
+      });
+      global.danger = {
+        git: { commits: [{ message: 'chore: do something' }] },
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Stories Referenced:**\n - [US1234567](https://rally1.rallydev.com/#/search?keywords=US1234567)`
+      );
+    });
+
+    it('looks for defects in PR descriptions', () => {
+      mockPrInfo({
+        title: 'My Test Title',
+        description: 'some description closes DE123456',
+      });
+      global.danger = {
+        git: { commits: [{ message: 'chore: do something' }] },
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Defects Referenced:**\n - [DE123456](https://rally1.rallydev.com/#/search?keywords=DE123456)`
+      );
+    });
+
+    it('looks for tasks in PR descriptions', () => {
+      mockPrInfo({
+        title: 'My Test Title',
+        description: 'some description closes TA1234567',
+      });
+      global.danger = {
+        git: { commits: [{ message: 'chore: do something' }] },
+      };
+      rally();
+      expect(global.markdown).toHaveBeenCalledWith(
+        `**Tasks Referenced:**\n - [TA1234567](https://rally1.rallydev.com/#/search?keywords=TA1234567)`
+      );
+    });
   });
 
   it('only prints story references one time', () => {
+    mockPrInfo({
+      title: 'My Test Title',
+      description: 'some description closes US1234567',
+    });
+
     global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'My Test Title',
-          description: 'some description closes US1234567',
-        },
-      },
       git: {
         commits: [
           { message: 'chore: do something' },
@@ -339,13 +323,12 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
   });
 
   it('only prints defect references one time', () => {
+    mockPrInfo({
+      title: 'My Test Title',
+      description: 'some description closes DE123456',
+    });
+
     global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'My Test Title',
-          description: 'some description closes DE123456',
-        },
-      },
       git: {
         commits: [
           { message: 'chore: do something' },
@@ -360,13 +343,12 @@ Tools like [standard-version](https://www.npmjs.com/package/standard-version) re
   });
 
   it('only prints task references one time', () => {
+    mockPrInfo({
+      title: 'My Test Title',
+      description: 'some description closes TA1234567',
+    });
+
     global.danger = {
-      bitbucket_server: {
-        pr: {
-          title: 'My Test Title',
-          description: 'some description closes TA1234567',
-        },
-      },
       git: {
         commits: [
           { message: 'chore: do something' },
