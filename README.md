@@ -21,7 +21,14 @@ At a glance:
 // dangerfile.js
 import rally from 'danger-plugin-rally';
 
-rally();
+// Defaults
+const config = {
+  requirePound: false,
+  bodyOnly: false,
+  domain: 'https://rally1.rallydev.com',
+};
+
+rally(config);
 ```
 
 This plugin:
